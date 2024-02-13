@@ -1,19 +1,26 @@
 import React from 'react'
-import { Provider } from 'react-redux'
-import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import ReactDOM from 'react-dom/client'
-import './index.css'
 import App from './App'
-import myFirstReducer from './reducer'
 
-const rootReducer = combineReducers({ myFirstReducer })
-const store = configureStore({ reducer: rootReducer })
+import { Provider } from 'react-redux'
+import createSagaMiddleware from 'redux-saga'
+import { configureStore } from '@reduxjs/toolkit'
+import catsReducer from './catState'
+import catSaga from './catSaga'
+
+const saga = createSagaMiddleware()
+const store = configureStore({
+  reducer: {
+    cats: catsReducer
+  },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(saga)
+})
+
+saga.run(catSaga)
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <App />
+  </Provider>
 )
